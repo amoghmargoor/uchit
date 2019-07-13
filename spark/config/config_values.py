@@ -25,6 +25,7 @@ class ConfigValues:
     def get_min_for_normalization(self):
         pass
 
+
 class ConfigType(Enum):
     INT = 1
     FLOAT = 2
@@ -71,11 +72,6 @@ class IntRangeValues(RangeValues):
         self.__min_norm = int(min_norm)
         self.__max_norm = int(max_norm)
 
-    def get_values(self):
-        if self.__value is not None:
-            self.__value = range(self.__min, self.__max, self.__step)
-        return self.__value
-
     def get_type(self):
         return ConfigType.INT
 
@@ -88,7 +84,7 @@ class FloatRangeValues(RangeValues):
         self.__min = float(min_val)
         self.__max = float(max_val)
         self.__step = float(step)
-        self.__min_norm = min_val
+        self.__min_norm = min_norm
         self.__max_norm = max_norm
 
     def get_type(self):

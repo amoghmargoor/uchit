@@ -1,4 +1,6 @@
 from ..config.config_values import ConfigType
+
+
 class ConfigNormalizer:
     def __init__(self, configs):
         self.__configs = configs
@@ -11,9 +13,9 @@ class ConfigNormalizer:
         for config_name in self.__config_name_list:
             config_value = self.__config_dict[config_name]
             norm_values = self.__normalize(config_value.get_values,
-                                 config_value.get_min_for_normalization,
-                                 config_value.get_max_for_normalization,
-                                 config_value.get_type)
+                                           config_value.get_min_for_normalization,
+                                           config_value.get_max_for_normalization,
+                                           config_value.get_type)
             normalized_config.append(norm_values)
         return normalized_config
 
