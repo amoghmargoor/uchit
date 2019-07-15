@@ -63,7 +63,7 @@ class RangeValues(ConfigValues):
 
 class IntRangeValues(RangeValues):
     def __init__(self, min_val, max_val, step,
-                 min_norm=0, max_norm=1  # these are min and max possible values for normalization
+                 min_norm, max_norm  # these are min and max possible values for normalization
                  ):
         RangeValues.__init__(self)
         self._min = int(min_val)
@@ -78,7 +78,7 @@ class IntRangeValues(RangeValues):
 
 class FloatRangeValues(RangeValues):
     def __init__(self, min_val, max_val, step,
-                 min_norm=0, max_norm=1  # these are min and max possible values for normalization
+                 min_norm, max_norm  # these are min and max possible values for normalization
                  ):
         RangeValues.__init__(self)
         self._min = float(min_val)
@@ -94,7 +94,7 @@ class FloatRangeValues(RangeValues):
 class PointValue(ConfigValues):
     __metaclass__ = ABCMeta
 
-    def __init__(self, value, min_norm=0, max_norm=1):
+    def __init__(self, value, min_norm, max_norm):
         self._values = value
         self._min_norm = min_norm
         self._max_norm = max_norm
@@ -113,7 +113,7 @@ class PointValue(ConfigValues):
 
 
 class IntPointValue(PointValue):
-    def __init__(self, value, min_norm=0, max_norm=1):
+    def __init__(self, value, min_norm, max_norm):
         PointValue.__init__(self, map(int, value), min_norm, max_norm)
 
     def get_type(self):
@@ -121,7 +121,7 @@ class IntPointValue(PointValue):
 
 
 class FloatPointValue(PointValue):
-    def __init__(self, value, min_norm=0, max_norm=1):
+    def __init__(self, value, min_norm, max_norm):
         PointValue.__init__(self, map(float, value), min_norm, max_norm)
 
     def get_type(self):
