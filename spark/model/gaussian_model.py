@@ -13,17 +13,19 @@ class GaussianModel:
     beta = np.array([1, 1, 1, 1, 1, 1, 1]) * pow(10, -6)
     gamma = np.array([1, 0.01, 0.5, 1, 1, 1, 0.01])
     theta = np.array([1.0, 0.09, 0.17, 0.17, 0.17, 0.17, 0.8])
-    training_pair_wise_corr = None
 
-    def __init__(self, training_data, training_out):
+    def __init__(self):
+        self.training_pair_wise_corr = None
+        self.training_data = None
+        self.training_out = None
+        self.best_out = None
+
+    def train(self, training_data, training_out):
         self.training_data = training_data
         self.training_out = training_out
         self.get_corr_with_train_data()
         self.best_out = math.min(training_out)
-
-    def train(self):
         # ToDo: Implement a train function to find precise values of alpha, beta and gamma
-        pass
 
     def add_sample_to_train_data(self, config, out):
         self.training_pair_wise_corr = None
@@ -31,6 +33,9 @@ class GaussianModel:
         self.training_out.append(out)
 
     def get_best_config(self, normalized_configs):
+        if self.training_data is None:
+            raise Exception("No training data found")
+
         best_config = None
         best_out = sys.maxint
         for config in list(itertools.product(*normalized_configs)):

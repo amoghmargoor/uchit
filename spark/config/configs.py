@@ -20,17 +20,17 @@ class Configs:
     def get_config_dict(self):
         return self.config.copy()
 
-    def __get_min_executor_mem(self):
-        int(self.total_memory / self.num_cores)
+    def _get_min_executor_mem(self):
+        return int(self.total_memory / self.num_cores)
 
-    def __get_max_executor_mem(self):
-        int(self.total_memory * 0.9)
+    def _get_max_executor_mem(self):
+        return int(self.total_memory * 0.9)
 
-    def __get_max_driver_memory(self):
-        int(self.total_memory / self.num_cores)
+    def _get_max_driver_memory(self):
+        return int(self.total_memory / self.num_cores)
 
-    def __get_max_broadcast_threshold(self):
-        int(self.__get_max_driver_memory() * 0.2)
+    def _get_max_broadcast_threshold(self):
+        return int(self._get_max_driver_memory() * 0.2)
 
     def get_config_names(self):
         return self.config.keys()
@@ -52,15 +52,18 @@ class DefaultConfigs(Configs):
     def add_default_config(self):
         self.add_config('spark.sql.shuffle.partitions', IntRangeValues(10, 2000, 50))\
             .add_config('spark.executor.memory',
-                        IntRangeValues(self.__get_min_executor_mem(),  # min executor memory
-                                       self.__get_max_executor_mem(),  # max executor memory
-                                       self.__get_min_executor_mem()))\
+                        IntRangeValues(self._get_min_executor_mem(),  # min executor memory
+                                       self._get_max_executor_mem(),  # max executor memory
+                                       # ToDo - Fix the min executor memory
+                                       # self._get_min_executor_mem()))\
+                                       512)) \
             .add_config('spark.driver.memory',
                         IntRangeValues(1024,  # 1024 MB is minimum driver memory
-                                       self.__get_min_executor_mem(), 512))\
+                                       # ToDo - Fix the max driver memory
+                                       1024 * 10, 512))\
             .add_config('spark.executor.cores', IntRangeValues(2, self.num_cores, 1))\
             .add_config('spark.sql.autoBroadcastJoinThreshold',
-                        IntRangeValues(10, self.__get_max_broadcast_threshold(), 20))
+                        IntRangeValues(10, self._get_max_broadcast_threshold(), 20))
 
     @staticmethod
     def get_instance(num_cores,  # int
