@@ -25,7 +25,7 @@ class LhsDiscreteSampler:
         numpy.random.seed(seed_value)
         total_num_configs = len(self._normalized_configs)
         max_points = max(self._config_size_array)
-        lhd = lhs(total_num_configs, self._sample_size, criterion='center', samples=self._sample_size)
+        lhd = lhs(total_num_configs, self._sample_size, criterion='center')
         return_config = []
         for config_set_index in range(lhd):
             config_set = []

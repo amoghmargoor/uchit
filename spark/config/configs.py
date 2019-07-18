@@ -1,4 +1,5 @@
-from spark.config.config_values import IntRangeValues
+from spark.config.config_values import IntRangeValues, PointValue
+from spark.config.configs_element import ConfigsElement
 
 
 class Configs:
@@ -10,10 +11,24 @@ class Configs:
         self.num_cores = num_cores
         self.total_memory = total_memory
         self.config = dict()
+        self.configs_elements = ConfigsElement()
 
     def add_config(self, name, config_value):
         self.config[name] = config_value
         return self
+
+    def add_configs_element(self, names, values, out):
+        assert len(names) == len(values)
+        temp = []
+        for (name, value) in zip(names, values):
+            config_value = self.get_config_dict.get(name)
+            if config_value is None:
+                raise Exception("Conf not found")
+
+            temp += (name, PointValue(value,
+                                      config_value.get_min_for_normalization,
+                                      config_value.get_max_for_normalization))
+        self.configs_elements.add_config(temp, out)
 
     # WARNING: returns shallow copy which is fine as keys are String and values are ConfigValues
     # and both are immutable. If we change that anytime then this should return deepcopy

@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 
+from spark.discretizer.normalizer import ConfigNormalizer
+
 
 class ConfigValues:
     __metaclass__ = ABCMeta
@@ -110,6 +112,10 @@ class PointValue(ConfigValues):
 
     def get_min_for_normalization(self):
         return self._min_norm
+
+    def get_normalized_value(self):
+        normalizer = ConfigNormalizer.norm_function(self._min_norm, self._max_norm)
+        return normalizer(self._values)
 
 
 class IntPointValue(PointValue):

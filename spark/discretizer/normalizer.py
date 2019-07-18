@@ -12,7 +12,7 @@ class ConfigNormalizer:
         normalized_config = []
         for config_name in self._config_name_list:
             config_value = self._config_dict[config_name]
-            norm_values = self.__normalize(config_value.get_values(),
+            norm_values = ConfigNormalizer.normalize(config_value.get_values(),
                                            config_value.get_min_for_normalization(),
                                            config_value.get_max_for_normalization(),
                                            config_value.get_type())
@@ -25,9 +25,13 @@ class ConfigNormalizer:
     def get_config_names(self):
         return self._config_name_list
 
-    def __normalize(self, values, min_norm, max_norm, type):
-        norm_func = lambda a: (1/float(max_norm - min_norm)) * (a - min_norm)
-        norm_values = map(norm_func, values)
+    @staticmethod
+    def norm_function(max_norm, min_norm):
+        return lambda a: (1/float(max_norm - min_norm)) * (a - min_norm)
+
+    @staticmethod
+    def normalize(values, min_norm, max_norm, type):
+        norm_values = map(ConfigNormalizer.norm_function(min_norm, max_norm), values)
         # If we want to normalize all the values to be in between 0 and 1, we might have to remove this condition
         # if type == ConfigType.INT:
         #     norm_values = map(int, norm_values)
