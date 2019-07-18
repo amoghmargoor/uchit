@@ -6,7 +6,7 @@ import numpy as np
 import sys
 
 from spark.discretizer.lhs_discrete_sampler import LhsDiscreteSampler
-from spark.discretizer.normalizer import ConfigNormalizer
+from spark.discretizer.normalizer import ConfigNormalizer, ConfigDenormalizer
 
 
 class GaussianModel:
@@ -55,13 +55,21 @@ class GaussianModel:
             raise Exception("No training data found")
 
         normalized_values = self.method_to_return_normalized_values()
-        best_config = None
+        best_config_value = None
+        best_config = {}
         best_out = sys.maxint
         for config in list(itertools.product(*normalized_values)):
             out = self.predict(config)
             if out < best_out:
                 best_out = out
-                best_config = config
+                best_config_value = config
+        for name in self.training_conf_names():
+            config_value = self.configs[name]
+            best_config[name] = ConfigDenormalizer.denormalize(
+                best_config_value,
+                config_value.get_min_for_normalization(),
+                config_value.get_max_for_normalization()
+            )
         return best_config
 
     def get_correlation(self, var1, var2):

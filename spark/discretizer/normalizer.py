@@ -47,3 +47,13 @@ class ConfigDenormalizer:
         return_configs = {}
         for key in self.__config_keys:
             return_configs[key] = []
+
+    @staticmethod
+    def denorm_func(min_norm, max_norm):
+        return lambda a: (a * (max_norm - min_norm)) + min_norm
+
+    @staticmethod
+    def denormalize(value, min_norm, max_norm):
+        denormlizer_func = ConfigDenormalizer.denorm_func(min_norm, max_norm)
+        return denormlizer_func(value)
+
