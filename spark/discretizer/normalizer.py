@@ -29,8 +29,8 @@ class ConfigNormalizer:
         norm_func = lambda a: (1/float(max_norm - min_norm)) * (a - min_norm)
         norm_values = map(norm_func, values)
         # If we want to normalize all the values to be in between 0 and 1, we might have to remove this condition
-        if type == ConfigType.INT:
-            norm_values = map(int, norm_values)
+        # if type == ConfigType.INT:
+        #     norm_values = map(int, norm_values)
         return norm_values
 
 

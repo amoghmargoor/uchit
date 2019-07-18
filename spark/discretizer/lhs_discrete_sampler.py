@@ -11,9 +11,7 @@ class LhsDiscreteSampler:
                  seed_value,
                  sample_size=None):
         self._normalized_configs = normalized_configs
-        # ToDo - Fix the max_sample_size
-        max_sample_size = len(normalized_configs[0])
-        # max_sample_size = max(normalized_configs, key=len)
+        max_sample_size = max(list(map(lambda x: len(x), normalized_configs)))
         if sample_size is None:
             self._sample_size = max_sample_size
         elif sample_size > max_sample_size:
@@ -27,7 +25,7 @@ class LhsDiscreteSampler:
         numpy.random.seed(seed_value)
         total_num_configs = len(self._normalized_configs)
         max_points = max(self._config_size_array)
-        lhd = lhs(total_num_configs, self._sample_size, criterion='center')
+        lhd = lhs(total_num_configs, self._sample_size, criterion='center', samples=self._sample_size)
         return_config = []
         for config_set_index in range(lhd):
             config_set = []

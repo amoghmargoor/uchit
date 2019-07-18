@@ -48,7 +48,7 @@ class RangeValues(ConfigValues):
 
     def get_values(self):
         if self._values is None:
-            self._values = range(self._min, self._max, self._step)
+            self._values = range(self._min + self._step, self._max, self._step)
         return self._values
 
     def get_num_elements(self):

@@ -50,22 +50,17 @@ class DefaultConfigs(Configs):
             DefaultConfigs.__instance = self
 
     def add_default_config(self):
-        # ToDo - fix the min/max normalization values
-        self.add_config('spark.sql.shuffle.partitions', IntRangeValues(10, 2000, 50, 1, 5))\
+        self.add_config('spark.sql.shuffle.partitions', IntRangeValues(10, 2000, 50, 10, 2000))\
             .add_config('spark.executor.memory',
                         IntRangeValues(self._get_min_executor_mem(),  # min executor memory
                                        self._get_max_executor_mem(),  # max executor memory
-                                       # ToDo - Fix the min executor memory
-                                       # self._get_min_executor_mem()))\
-                                       512, 512, 1024)) \
+                                       512, self._get_min_executor_mem(),
+                                       self._get_max_executor_mem())) \
             .add_config('spark.driver.memory',
-                        IntRangeValues(1024,  # 1024 MB is minimum driver memory
-                                       # ToDo - Fix the max driver memory
-                                       1024 * 10, 512, 256, 512))\
-            .add_config('spark.executor.cores', IntRangeValues(2, self.num_cores, 1, 1, 2))\
-            .add_config('spark.sql.autoBroadcastJoinThreshold',
-                        IntRangeValues(10, self._get_max_broadcast_threshold(), 20, 1,
-                                       5))
+                        IntRangeValues(256,
+                                       self._get_max_driver_memory(),
+                                       256, 1024, self._get_max_driver_memory())) \
+            .add_config('spark.executor.cores', IntRangeValues(2, self.num_cores, 1, 1, self.num_cores))
 
     @staticmethod
     def get_instance(num_cores,  # int
