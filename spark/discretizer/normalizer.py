@@ -1,4 +1,4 @@
-from ..config.config_values import ConfigType
+# from ..config.config_values import ConfigType
 
 
 class ConfigNormalizer:

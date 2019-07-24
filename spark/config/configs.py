@@ -21,13 +21,13 @@ class Configs:
         assert len(names) == len(values)
         temp = []
         for (name, value) in zip(names, values):
-            config_value = self.get_config_dict.get(name)
+            config_value = self.get_config_dict().get(name)
             if config_value is None:
                 raise Exception("Conf not found")
 
-            temp += (name, PointValue(value,
-                                      config_value.get_min_for_normalization,
-                                      config_value.get_max_for_normalization))
+            temp.append((name, PointValue(value,
+                                          config_value.get_min_for_normalization(),
+                                          config_value.get_max_for_normalization())))
         self.configs_elements.add_config(temp, out)
 
     # WARNING: returns shallow copy which is fine as keys are String and values are ConfigValues
@@ -74,7 +74,7 @@ class DefaultConfigs(Configs):
             .add_config('spark.driver.memory',
                         IntRangeValues(256,
                                        self._get_max_driver_memory(),
-                                       256, 1024, self._get_max_driver_memory())) \
+                                       256, 256, self._get_max_driver_memory())) \
             .add_config('spark.executor.cores', IntRangeValues(2, self.num_cores, 1, 1, self.num_cores))
 
     @staticmethod

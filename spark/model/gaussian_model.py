@@ -32,10 +32,10 @@ class GaussianModel:
 
         for ele in self.configs.configs_elements.config_elements_list:
             self.training_conf_names = list(map(lambda x: x[0], ele["configs"]))
-            self.training_inp += list(map(lambda x: x[1], ele["configs"]))
-            self.training_inp_normalized += list(map(lambda x: x[1].get_normalized_value(), ele["configs"]))
-            self.training_out += ele["out"]
-        self.best_out = math.min(self.training_out)
+            self.training_inp.append(list(map(lambda x: x[1], ele["configs"])))
+            self.training_inp_normalized.append(list(map(lambda x: x[1].get_normalized_value(), ele["configs"])))
+            self.training_out.append(ele["out"])
+            self.best_out = min(self.training_out)
         # ToDo: Implement a train function to find precise values of alpha, beta and gamma
 
     def add_sample_to_train_data(self, config, out):
@@ -43,9 +43,9 @@ class GaussianModel:
         self.training_data.append(config)
         self.training_out.append(out)
 
-    def method_to_return_normalized_values(self):
+    def get_normlized_values(self):
         # Normalize the values
-        # Use LHS to get the cprrect values
+        # Use LHS to get the correct values
         normalizer = ConfigNormalizer(self.configs)
         lhs_sampler = LhsDiscreteSampler(normalizer._normalized_config, 2)
         return lhs_sampler._get_samples(2)
@@ -54,7 +54,7 @@ class GaussianModel:
         if self.training_inp_normalized is None:
             raise Exception("No training data found")
 
-        normalized_values = self.method_to_return_normalized_values()
+        normalized_values = self.get_normlized_values()
         best_config_value = None
         best_config = {}
         best_out = sys.maxint
@@ -68,8 +68,7 @@ class GaussianModel:
             best_config[name] = ConfigDenormalizer.denormalize(
                 best_config_value,
                 config_value.get_min_for_normalization(),
-                config_value.get_max_for_normalization()
-            )
+                config_value.get_max_for_normalization())
         return best_config
 
     def get_correlation(self, var1, var2):

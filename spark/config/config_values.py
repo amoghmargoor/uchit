@@ -117,6 +117,8 @@ class PointValue(ConfigValues):
         normalizer = ConfigNormalizer.norm_function(self._min_norm, self._max_norm)
         return normalizer(self._values)
 
+    def get_type(self):
+        return None
 
 class IntPointValue(PointValue):
     def __init__(self, value, min_norm, max_norm):

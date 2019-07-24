@@ -7,4 +7,4 @@ class ConfigsElement:
         self.config_elements_list = []
 
     def add_config(self, configs, out):
-        self.config_elements_list += {"configs": configs, "out": out}
+        self.config_elements_list.append({"configs": configs, "out": out})

@@ -25,15 +25,15 @@ class LhsDiscreteSampler:
         numpy.random.seed(seed_value)
         total_num_configs = len(self._normalized_configs)
         max_points = max(self._config_size_array)
-        lhd = lhs(total_num_configs, self._sample_size, criterion='center')
+        lhd = lhs(total_num_configs, samples=self._sample_size, criterion='center')
         return_config = []
-        for config_set_index in range(lhd):
+        for config_set_index in range(len(lhd)):
             config_set = []
-            for config_index in range(lhd(config_set_index)):
+            for config_index in range(len(lhd(config_set_index))):
                 # Since config value lengths are unequal we sampled using maximum points
                 # To find the actual point from sampled points p,
                 # we will find index = int(round(p * actual_size/max_size))
-                actual_index = int(round(lhd(config_index)
+                actual_index = int(round(len(lhd(config_index))
                                          * (self._config_size_array[config_index]/float(max_points))))
                 config_set.append(self._normalized_configs[config_index][actual_index])
             return_config.append(config_set)
