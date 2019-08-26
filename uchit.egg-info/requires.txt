@@ -1,6 +1,0 @@
-Click
-enum34
-pyDOE
-numpy==1.15
-scipy==0.16
-pytest==4.6.5

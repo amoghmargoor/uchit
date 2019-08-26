@@ -1,9 +1,0 @@
-README.md
-setup.py
-uchit.py
-uchit.egg-info/PKG-INFO
-uchit.egg-info/SOURCES.txt
-uchit.egg-info/dependency_links.txt
-uchit.egg-info/entry_points.txt
-uchit.egg-info/requires.txt
-uchit.egg-info/top_level.txt
