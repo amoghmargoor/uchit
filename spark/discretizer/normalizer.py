@@ -18,10 +18,11 @@ class ConfigNormalizer:
     #  Currently it has assumption that normalized config_array will have values
     #  from param in same order of self._param_list.
     def denormalize_config(self, normalized_config_array):
+        assert len(normalized_config_array) == len(self._param_list)
         res = list()
         i = 0
         for param in self._param_list:
-            res.append(ConfigNormalizer.denormalize(param, normalized_config_array[i]))
+            res.append(ConfigNormalizer.denormalize_value(param, normalized_config_array[i]))
             ++i
         return res
 
@@ -52,6 +53,13 @@ class ConfigNormalizer:
         domain = param.get_domain()
         denormlizer_func = ConfigNormalizer.denorm_func(domain.get_min(), domain.get_max())
         return list(map(denormlizer_func, value))
+
+    @staticmethod
+    def denormalize_value(param, value):
+        domain = param.get_domain()
+        denormlizer_func = ConfigNormalizer.denorm_func(domain.get_min(), domain.get_max())
+        return denormlizer_func(value)
+
 
 
 

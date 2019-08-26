@@ -97,7 +97,8 @@ class GaussianModel:
         best_config_value = None
         best_config = {}
         best_out = sys.maxint
-        for config in list(itertools.product(*normalized_values)):
+        # for config in list(itertools.product(*normalized_values)):
+        for config in normalized_values:
             out = self.predict(config)
             if out < best_out:
                 best_out = out
