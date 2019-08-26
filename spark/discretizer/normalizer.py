@@ -1,14 +1,13 @@
 class ConfigNormalizer:
     def __init__(self, config_set):
         self._config_set = config_set
-        self._param_list = config_set.get_params
+        self._param_list = config_set.get_params()
         self._normalized_config = self.__init_normalized_config()
 
     def __init_normalized_config(self):
         normalized_config = []
         for param in self._param_list:
-            domain = param.get_domain()
-            norm_values = ConfigNormalizer.normalize(domain)
+            norm_values = ConfigNormalizer.normalize(param, param.get_domain().get_possible_values())
             normalized_config.append(norm_values)
         return normalized_config
 
@@ -36,13 +35,13 @@ class ConfigNormalizer:
     @staticmethod
     def normalize_domain(domain):
         norm_values = map(ConfigNormalizer.norm_function(domain.get_min(), domain.get_max()),
-                          domain.get_possible_values)
+                          domain.get_possible_values())
         return norm_values
 
     @staticmethod
     def normalize(param, value):
-        domain = param.get_domain
-        return ConfigNormalizer.norm_function(domain.get_min(), domain.get_max())(value)
+        domain = param.get_domain()
+        return list(map(ConfigNormalizer.norm_function(domain.get_min(), domain.get_max()), value))
 
     @staticmethod
     def denorm_func(min_norm, max_norm):
@@ -50,9 +49,9 @@ class ConfigNormalizer:
 
     @staticmethod
     def denormalize(param, value):
-        domain = param.get_domain
+        domain = param.get_domain()
         denormlizer_func = ConfigNormalizer.denorm_func(domain.get_min(), domain.get_max())
-        return denormlizer_func(value)
+        return list(map(denormlizer_func, value))
 
 
 

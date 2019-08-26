@@ -5,6 +5,7 @@ import math
 import numpy as np
 import sys
 
+from spark.config.config import Config
 from spark.discretizer.lhs_discrete_sampler import LhsDiscreteSampler
 from spark.discretizer.normalizer import ConfigNormalizer
 
@@ -13,9 +14,9 @@ class GaussianModel:
 
     # ToDO - Fix the values initialisation
     alpha = 2.0
-    beta = np.array([1, 1, 1, 1, 1, 1, 1]) * pow(10, -6)
-    gamma = np.array([1, 0.01, 0.5, 1, 1, 1, 0.01])
-    theta = np.array([1.0, 0.09, 0.17, 0.17, 0.17, 0.17, 0.8])
+    beta = np.array([1, 1, 1, 1]) * pow(10, -6)
+    gamma = np.array([1, 1, 1, 1])
+    theta = np.array([1.0, 0.17, 0.17, 0.8])
 
     def __init__(self, training_data, config_set):
         self.training_pair_wise_corr = None
@@ -23,6 +24,7 @@ class GaussianModel:
         self.training_out = []
         self.training_inp_normalized = []
         self.training_conf_names = []
+        self.config_param_mapping = {}
         self.best_out = None
         self.training_data = training_data
         self.config_set = config_set
@@ -32,19 +34,56 @@ class GaussianModel:
         if not self.training_data or self.training_data.size() == 0:
             raise Exception("No training data found")
 
-        for ele in self.training_data.get_training_data:
-            self.training_conf_names = ele["configs"].get_all_param_names
-            self.training_inp.append(ele["configs"].get_all_param_values)
-            param_dict = ele["configs"].get_params_dict()
-            self.training_inp_normalized.append(
-                list(map(lambda x: ConfigNormalizer.normalize(x, param_dict[x]), param_dict)))
-            self.training_out.append(ele["output"])
+        for data_point in self.training_data.get_training_data():
+            self.training_conf_names = data_point["configs"].get_all_param_names()
+            self.training_inp.append(data_point["configs"].get_all_param_values())
+            print self.training_inp
+            param_dict = data_point["configs"].get_params_dict()
+            normalized_param_values = list()
+            for param in param_dict:
+                param_domain = param.get_domain()
+                normalized_param_values.append(ConfigNormalizer
+                                               .norm_function(param_domain.get_max(), param.get_min())(param_dict[param]))
+            self.training_inp_normalized.append(normalized_param_values)
+            # self.training_inp_normalized.append(
+            #     list(map(lambda x: ConfigNormalizer
+            #              .norm_function(x.get_domain().get_max(), x.get_domain().get_min())(param_dict[x]),
+            #              param_dict)))
+            self.training_out.append(data_point["output"])
             self.best_out = min(self.training_out)
         # ToDo: Implement a train function to find precise values of alpha, beta and gamma
 
-    def add_sample_to_train_data(self, config, out):
+    def get_param_object(self, config_name):
+        if not self.config_param_mapping:
+            for param in self.config_set.get_params():
+                self.config_param_mapping[param.get_name()] = param
+
+        return self.config_param_mapping[config_name]
+
+    def add_sample_to_train_data(self, training_sample, out):
+        """
+        training_sample is expected to be of the format
+        {
+            "spark.sql.shuffle.partitions": 100,
+            "spark.executor.memory": 5120,
+            "spark.driver.memory": 1024,
+            "spark.executor.cores": 4,
+            .
+            .
+            .
+        }
+
+        Internally we will map config names to there corresponding Param objects
+        """
+        valid_config_names = list(map(lambda x: x.get_name(), self.config_set))
+        for config_name in training_sample.keys():
+            if config_name not in valid_config_names:
+                raise Exception("Invalid config to be added training data. Valid configs are: %s" % valid_config_names)
         self.training_pair_wise_corr = None
-        self.training_data.add_training_data(config, out)
+        training_config = Config(self.config_set.num_cores, self.config_set.total_memory)
+        for config_name in training_sample.keys():
+            training_config.add_param(self.get_param_object(config_name), training_sample[config_name])
+        self.training_data.add_training_data(training_config, out)
 
     def get_sampled_configs(self):
         # Normalize the values
