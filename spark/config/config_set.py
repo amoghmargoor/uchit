@@ -13,6 +13,9 @@ class ConfigSet:
     def get_params(self):
         return self.param_list
 
+    def get_size(self):
+        return len(self.param_list)
+
 
 # Set of all possible Parameter Values that can be used to tune a Job
 # Name is derived from Universal Set in Set Theory which is defined
