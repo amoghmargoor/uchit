@@ -69,7 +69,7 @@ class GaussianModel:
             .
         }
 
-        Internally we will map config names to there corresponding Param objects
+        Internally we will map config names to their corresponding Param objects
         """
         valid_config_names = list(map(lambda x: x.get_name(), self.config_set.get_params()))
         if set(training_sample.keys()) != set(valid_config_names):
